@@ -9,6 +9,11 @@ const envSchema = z
       (val) => Number(val),
       z.number().int().positive(),
     ),
+    ORDERS_SERVICE_HOST: z.string(),
+    ORDERS_SERVICE_PORT: z.preprocess(
+      (val) => Number(val),
+      z.number().int().positive(),
+    ),
   })
   .passthrough();
 
