@@ -9,23 +9,18 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { ORDER_SERVICE } from 'src/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { CreateOrderDto, OrderPaginationDto, StatusDto } from './dto';
 import { PaginationDto } from 'src/common';
+import { NATS_SERVICE } from 'src/config';
 
 @Controller('orders')
 export class OrdersController {
-  constructor(
-    @Inject(ORDER_SERVICE) private readonly orderService: ClientProxy,
-  ) {}
+  constructor(@Inject(NATS_SERVICE) private readonly client: ClientProxy) {}
 
   @Get()
   findAll(@Query() orderPaginationDto: OrderPaginationDto) {
-    return this.orderService.send(
-      { cmd: 'find_all_orders' },
-      orderPaginationDto,
-    );
+    return this.client.send('find_all_orders', orderPaginationDto);
   }
 
   @Get(':status')
@@ -33,20 +28,20 @@ export class OrdersController {
     @Param() statusDto: StatusDto,
     @Query() paginationDto: PaginationDto,
   ) {
-    return this.orderService.send(
-      { cmd: 'find_all_orders' },
-      { ...paginationDto, status: statusDto.status },
-    );
+    return this.client.send('find_all_orders', {
+      ...paginationDto,
+      status: statusDto.status,
+    });
   }
 
   @Get('id/:id')
   findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.orderService.send({ cmd: 'find_one_order' }, { id });
+    return this.client.send('find_one_order', { id });
   }
 
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
-    return this.orderService.send({ cmd: 'create_order' }, createOrderDto);
+    return this.client.send('create_order', createOrderDto);
   }
 
   @Patch(':id')
@@ -54,9 +49,9 @@ export class OrdersController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() statusDto: StatusDto,
   ) {
-    return this.orderService.send(
-      { cmd: 'change_order_status' },
-      { id, status: statusDto.status },
-    );
+    return this.client.send('change_order_status', {
+      id,
+      status: statusDto.status,
+    });
   }
 }

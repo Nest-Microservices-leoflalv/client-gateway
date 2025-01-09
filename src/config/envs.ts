@@ -4,15 +4,10 @@ import { z } from 'zod';
 const envSchema = z
   .object({
     PORT: z.preprocess((val) => Number(val), z.number().int().positive()),
-    PRODUCTS_SERVICE_HOST: z.string(),
-    PRODUCTS_SERVICE_PORT: z.preprocess(
-      (val) => Number(val),
-      z.number().int().positive(),
-    ),
-    ORDERS_SERVICE_HOST: z.string(),
-    ORDERS_SERVICE_PORT: z.preprocess(
-      (val) => Number(val),
-      z.number().int().positive(),
+
+    NATS_SERVERS: z.preprocess(
+      (val: string) => val.split(','),
+      z.array(z.string()),
     ),
   })
   .passthrough();
