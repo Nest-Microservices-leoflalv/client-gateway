@@ -6,7 +6,7 @@ const envSchema = z
     PORT: z.preprocess((val) => Number(val), z.number().int().positive()),
 
     NATS_SERVERS: z.preprocess(
-      (val: string) => val.split(','),
+      (val: string) => val?.split(',') ?? val,
       z.array(z.string()),
     ),
   })
