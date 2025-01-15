@@ -26,8 +26,6 @@ async function bootstrap() {
 
   await app.listen(envs.PORT);
 
-  console.log(`Gateway is running on: http://localhost:${envs.PORT}`);
-
   logger.log(`Gateway is running on: http://localhost:${envs.PORT}`);
 }
 bootstrap();
