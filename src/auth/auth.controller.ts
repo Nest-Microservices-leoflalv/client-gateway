@@ -1,7 +1,10 @@
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { NATS_SERVICE } from 'src/config';
 import { LoginUserDto, RegisterUserDto } from './dto';
+import { AuthGuard } from './guards';
+import { Token, User } from './decorators';
+import { CurrentUser } from './interfaces';
 
 @Controller('auth')
 export class AuthController {
@@ -17,8 +20,12 @@ export class AuthController {
     return this.client.send('auth.login.user', loginUserDto);
   }
 
+  @UseGuards(AuthGuard)
   @Get('verify')
-  verifyToken(): unknown {
-    return this.client.send('auth.verify.user', {});
+  verifyToken(@User() user: CurrentUser, @Token() token: string): unknown {
+    return {
+      user,
+      token,
+    };
   }
 }
